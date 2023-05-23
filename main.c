@@ -15,7 +15,9 @@ while (opcao != '0'){
         case '1':
             AdicionarUsuario();
             break;
-
+        case '2':
+            EditarUsuario();
+            break;
         default:
             break;
         }
