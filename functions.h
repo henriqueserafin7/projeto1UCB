@@ -18,6 +18,7 @@ typedef struct tUsuario {
 } Usuario;
 
 Usuario usuarios[MAX_USUARIOS];
+Usuario usuariosbackup[MAX_USUARIOS];
 
 void AbrirMenu(){
     printf("1 - Adicionar Usuario\n");
@@ -282,9 +283,69 @@ int ImprimirUsuarios(){
         printf("id:  %d\n", usuarios[i].identificador);
         printf("nome: %s\n", usuarios[i].nomeCompleto);
         printf("email: %s\n", usuarios[i].email);
-        printf("sexo: %s\n", usuarios[i].genero);
+        printf("genero: %s\n", usuarios[i].genero);
         printf("endereco: %s\n", usuarios[i].endereco);
         printf("altura: %.2lf\n", usuarios[i].altura);
         printf("status de vacinacao: %d\n", usuarios[i].statusVacinacao);
+    }
+}
+
+int BackUp(){
+    int certeza;
+
+    printf("tem certeza que deseja fazer backup?\n1 - sim 2 - nao\n");
+    scanf("%d", &certeza);
+
+    if(certeza == 1){
+        for(int i = 0; i < quantidadeUsuarios; i++){
+           usuariosbackup[i].identificador = usuarios[i].identificador;
+            strcpy(usuariosbackup[i].nomeCompleto, usuarios[i].nomeCompleto);
+            strcpy(usuariosbackup[i].email,usuarios[i].email);
+            strcpy(usuariosbackup[i].genero,usuarios[i].genero);
+            strcpy(usuariosbackup[i].endereco,usuarios[i].endereco);
+           usuariosbackup[i].altura =usuarios[i].altura;
+           usuariosbackup[i].statusVacinacao =usuarios[i].statusVacinacao;
+
+            printf("BackUp concluido com sucesso\n");
+
+            return 0;
+        }
+    }
+    else if(certeza == 2){
+        return 0;
+    }
+    else {
+        printf("invalido\n");
+        return -1;
+    }
+}
+
+int Restauracao(){
+    int certeza;
+
+    printf("quer mesmo fazer um backup?\n1 - sim 2 - nao\n");
+    scanf("%d", &certeza);
+
+    if(certeza == 1){
+        for(int i = 0; i < usuarios; i++){
+            usuarios[i].identificador = usuariosbackup[i].identificador;
+            strcpy(usuarios[i].nomeCompleto, usuariosbackup[i].nomeCompleto);
+            strcpy(usuarios[i].email, usuariosbackup[i].email);
+            strcpy(usuarios[i].genero, usuariosbackup[i].genero);
+            strcpy(usuarios[i].endereco, usuariosbackup[i].endereco);
+            usuarios[i].altura = usuariosbackup[i].altura;
+            usuarios[i].statusVacinacao = usuariosbackup[i].statusVacinacao;
+        }
+
+        printf("Backup realizado com sucesso\n");
+
+        return 0;
+    }
+    else if (certeza == 2){
+        return 0;
+    }
+    else {
+        printf("Invalido\n");
+        return -1;
     }
 }

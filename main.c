@@ -26,7 +26,16 @@ while (opcao != '0'){
         case '5':
             ImprimirUsuarios();
             break;
+        case '6':
+            BackUp();
+            break;
+        case '7':
+            Restauracao();
+            break;
+        case '0':
+            break;
         default:
+            printf("Opcao invalida\n");
             break;
         }
     }
