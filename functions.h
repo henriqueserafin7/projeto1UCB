@@ -277,14 +277,14 @@ int BuscarPorEmail(){
 }
 
 int ImprimirUsuarios(){
-    for(int i = 0; i < numUsuarios; i++){
+    for(int i = 0; i < quantidadeUsuarios; i++){
         printf("\n\n----------USUARIO %d----------\n", i+1);
-        printf("id:  %d\n", users[i].id);
-        printf("nome: %s\n", users[i].nomeCompleto);
-        printf("email: %s\n", users[i].email);
-        printf("sexo: %s\n", users[i].sexo);
-        printf("endereco: %s\n", users[i].endereco);
-        printf("altura: %.2lf\n", users[i].altura);
-        printf("status de vacinacao: %d\n", users[i].vacina);
+        printf("id:  %d\n", usuarios[i].identificador);
+        printf("nome: %s\n", usuarios[i].nomeCompleto);
+        printf("email: %s\n", usuarios[i].email);
+        printf("sexo: %s\n", usuarios[i].genero);
+        printf("endereco: %s\n", usuarios[i].endereco);
+        printf("altura: %.2lf\n", usuarios[i].altura);
+        printf("status de vacinacao: %d\n", usuarios[i].statusVacinacao);
     }
 }
