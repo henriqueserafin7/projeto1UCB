@@ -112,7 +112,7 @@ int AdicionarUsuario(){
         }
     }
 
-    printf("Digite o estado de sua vacinacao (1 = Vacinado / 0 = Não vacinado): ");
+    printf("Digite o estado de sua vacinacao (1 = Vacinado / 0 = nao vacinado): ");
     scanf("%d", &statusVacinacao);
 
     while(validacao == 1){
@@ -185,7 +185,7 @@ int EditarUsuario(){
                 }
             }
 
-            printf("Digite o estado de suaca (1 = Vacinado / 0 = Não vacinado): ");
+            printf("Digite o estado de suaca (1 = Vacinado / 0 = nao vacinado): ");
             scanf("%d", &usuarios[i].statusVacinacao);
 
             while(validacao == 1){
@@ -207,7 +207,7 @@ int EditarUsuario(){
         }
     }
 
-    printf("Usuario não encontrado.\n");
+    printf("Usuario nao encontrado.\n");
     return 0;
 }
 
@@ -226,7 +226,7 @@ int ExcluirUsuario(){
             printf("Altura: %.2lf\n", usuarios[i].altura);
             printf("Status deca: %d\n", usuarios[i].statusVacinacao);
             
-            printf("Tem certeza que deseja excluir esse usuario?\n1 - sim 2 - não\n");
+            printf("Tem certeza que deseja excluir esse usuario?\n1 - sim 2 - nao\n");
             scanf("%d", &certeza);
 
             if(certeza == 1){
@@ -250,7 +250,7 @@ int ExcluirUsuario(){
         }
     }
 
-    printf("Usuario não encontrado.\n");
+    printf("Usuario nao encontrado.\n");
     return -1;
 }
 
@@ -272,6 +272,19 @@ int BuscarPorEmail(){
         }
     }
 
-    printf("Usuario não encontrado.\n");
+    printf("Usuario nao encontrado.\n");
     return -1;
+}
+
+int ImprimirUsuarios(){
+    for(int i = 0; i < numUsuarios; i++){
+        printf("\n\n----------USUARIO %d----------\n", i+1);
+        printf("id:  %d\n", users[i].id);
+        printf("nome: %s\n", users[i].nomeCompleto);
+        printf("email: %s\n", users[i].email);
+        printf("sexo: %s\n", users[i].sexo);
+        printf("endereco: %s\n", users[i].endereco);
+        printf("altura: %.2lf\n", users[i].altura);
+        printf("status de vacinacao: %d\n", users[i].vacina);
+    }
 }

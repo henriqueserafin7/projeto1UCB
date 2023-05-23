@@ -23,6 +23,9 @@ while (opcao != '0'){
         case '4':
             BuscarPorEmail();
             break;
+        case '5':
+            ImprimirUsuarios();
+            break;
         default:
             break;
         }
