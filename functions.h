@@ -3,25 +3,19 @@
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
-#include <math.h>
-
-const int MAX_USUARIOS = 1000;
+#define MAX_USUARIOS 1000
 int numUsuarios = 0;
-
 typedef struct tUsuario {
     int id;
     char nomeCompleto[100];
-    char sexo[10];
     char email[100];
+    char sexo[10];
     char endereco[100];
     double altura;
     int vacina;
 } Usuario;
-
 Usuario users[MAX_USUARIOS];
-
 void AbrirMenu(){
-
     printf("1 - Adicionar Usuario\n");
     printf("2 - Editar Usuario\n");
     printf("3 - Excluir usuario\n");
@@ -127,80 +121,10 @@ int AdicionarUsuario(){
     tempUser.vacina = vacina;
     users[numUsuarios] = tempUser;
     numUsuarios++;
-
     return 0;
 }
-
 int EditarUsuario(){
     char email[100];
     int validacao = 1;
-
     printf("Digite o email do usuario: ");
     scanf(" %[^\n]", email);
-
-    for(int i = 0; i < MAX_USUARIOS; i++){
-        if(strcmp(users[i].email, email) == 0){
-
-            printf("nome: %s\n", users[i].nomeCompleto);
-            printf("sexo: %s\n", users[i].sexo);
-            printf("endereco: %s\n", users[i].endereco);
-            printf("altura: %.2lf\n", users[i].altura);
-            printf("status de vacinacao: %d\n", users[i].vacina);
-
-            printf("Digite seu nome completo: ");
-            scanf(" %[^\n]", users[i].nomeCompleto);
-
-            printf("Digite seu sexo(Masculino/Feminino/Indefinido): ");
-            scanf("%s", users[i].sexo);
-            users[i].sexo[0] = toupper(users[i].sexo[0]);
-
-            while(validacao == 1){
-                if(strcmp(users[i].sexo, "Masculino") == 0 || strcmp(users[i].sexo, "Feminino") == 0 || strcmp(users[i].sexo, "Indefinido") == 0)
-                    break;
-                else{
-                    printf("Sexo invalido tente novamente: ");
-                    scanf("%s", users[i].sexo);
-                    users[i].sexo[0] = toupper(users[i].sexo[0]);
-                }
-            }
-
-            printf("Digite seu endereco: ");
-            scanf(" %[^\n]", users[i].endereco);
-
-            printf("Digite sua altura: ");
-            scanf("%lf", &users[i].altura);
-            while(validacao == 1){
-                if(users[i].altura > 2 || users[i].altura < 1){
-                    printf("Altura invalida, lembre-se a medida esta em metros\n");
-                    printf("Tente novamente: ");
-                    scanf("%lf", &users[i].altura);
-                }
-                else{
-                    break;
-                }
-            }
-            printf("Digite o estado de sua vacinacao (1 = Vacinado/ 0 = Nao vacinado): ");
-            scanf("%d", &users[i].vacina);
-
-            while(validacao == 1){
-                if(users[i].vacina == 1 || users[i].vacina == 0)
-                    break;
-                else{
-                    printf("So sao aceitos 1 e 0 como valor\n");
-                    printf("Tente novamente: ");
-                    scanf("%d", &users[i].vacina);
-                }
-            }
-
-            printf("novo nome: %s\n", users[i].nomeCompleto);
-            printf("novo sexo: %s\n", users[i].sexo);
-            printf("novo endereco: %s\n", users[i].endereco);
-            printf("nova altura: %.2lf\n", users[i].altura);
-            printf("novo status de vacinacao: %d\n", users[i].vacina);
-
-            return 0;
-        }
-    }
-    printf("Usuario nao encontrado.\n");
-    return 0;
-}
