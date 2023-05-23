@@ -20,6 +20,9 @@ while (opcao != '0'){
          case '3':
             ExcluirUsuario();
             break;
+            case '4':
+            BuscarPorEmail();
+            break;
         default:
             break;
         }

@@ -128,10 +128,8 @@ int EditarUsuario(){
     int validacao = 1;
     printf("Digite o email do usuario: ");
     scanf(" %[^\n]", email);
-
     for(int i = 0; i < numUsuarios + 1; i++){
         if(strcmp(users[i].email, email) == 0){
-
             printf("nome: %s\n", users[i].nomeCompleto);
             printf("sexo: %s\n", users[i].sexo);
             printf("endereco: %s\n", users[i].endereco);
@@ -191,22 +189,17 @@ int EditarUsuario(){
 int ExcluirUsuario(){
     char email[100];
     int validacao = 1, certeza = 0;
-
     printf("Digite o email do usuario: ");
     scanf(" %[^\n]", email);
-
     for(int i = 0; i < numUsuarios; i++){
         if(strcmp(users[i].email, email) == 0){
-
             printf("nome: %s\n", users[i].nomeCompleto);
             printf("sexo: %s\n", users[i].sexo);
             printf("endereco: %s\n", users[i].endereco);
             printf("altura: %.2lf\n", users[i].altura);
             printf("status de vacinacao: %d\n", users[i].vacina);
-
             printf("Tem certeza que deseja excluir esse usuario?\n1 - sim 2 - nao\n");
             scanf("%d", &certeza);
-
             if(certeza == 1){
                 users[i].id = 0;
                 memset(users[i].email, 0, sizeof(users[i].email));
@@ -216,7 +209,7 @@ int ExcluirUsuario(){
                 users[i].altura = 0;
                 users[i].vacina = 0;
                 numUsuarios--;
-
+                
                 for (int j = i + 1; j < numUsuarios; j++){
                     users[j - 1] = users [j];
                 }
@@ -229,4 +222,29 @@ int ExcluirUsuario(){
     }
     printf("Usuario nao encontrado\n");
     return -1;
+}
+
+int BuscarPorEmail(){
+    char email[100];
+
+    printf("Digite o email do usuario: ");
+    scanf(" %[^\n]", email);
+
+    for(int i = 0; i < numUsuarios; i++){
+        if(strcmp(users[i].email, email) == 0){
+
+            printf("nome: %s\n", users[i].nomeCompleto);
+            printf("email: %s\n", users[i].email);
+            printf("sexo: %s\n", users[i].sexo);
+            printf("endereco: %s\n", users[i].endereco);
+            printf("altura: %.2lf\n", users[i].altura);
+            printf("status de vacinacao: %d\n", users[i].vacina);
+
+            return 0;
+        }
+        else{
+            printf("Usuario nao encontrado\n");
+            return -1;
+        }
+    }
 }
