@@ -70,6 +70,7 @@ int AdicionarUsuario(){
         for (int i = 0; i < strlen(email); i++){
             if (email[i] == '@'){
                 encontrado = 1;
+                validacao = 0;
                 break;
             }
         }
@@ -78,7 +79,8 @@ int AdicionarUsuario(){
             validacao = 0;
         }
         else{
-            printf("Email invalido, tente novamente.\n");
+            printf("Email invalido tente novamente: ");
+            scanf(" %[^\n]", email);
         }
     }
 
@@ -348,4 +350,4 @@ int Restauracao(){
         printf("Invalido\n");
         return -1;
     }
-}
+    }
