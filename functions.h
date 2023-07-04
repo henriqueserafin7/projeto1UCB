@@ -4,350 +4,407 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MAX_USUARIOS 1000
-int quantidadeUsuarios = 0;
-
-typedef struct tUsuario {
-    int identificador;
-    char nomeCompleto[100];
-    char email[100];
-    char genero[10];
-    char endereco[100];
+struct Node
+{
+    int ID;
+    char nome[50];
+    char email[50];
+    char sexo[10];
+    char endereco[50];
     double altura;
-    int statusVacinacao;
-} Usuario;
+    int vacina;
+    struct Node* next;
+};
 
-Usuario usuarios[MAX_USUARIOS];
-Usuario usuariosbackup[MAX_USUARIOS];
+struct Node* startNode;
+struct Node* nodeBuffer;
 
-void AbrirMenu(){
-    printf("1 - Adicionar Usuario\n");
-    printf("2 - Editar Usuario\n");
-    printf("3 - Excluir Usuario\n");
-    printf("4 - Buscar por Email\n");
-    printf("5 - Imprimir todos os Usuarios\n");
-    printf("6 - Fazer Backup dos Usuarios\n");
-    printf("7 - Restaurar os dados\n");
-    printf("0 - Fechar programa\n");
-    printf("Digite a opcao escolhida: ");
+// Função para adicionar um novo node
+void addNode();
+
+// Função para editar os dados de um node adiconado
+void editNode();
+
+// Função para excluir um node da lista
+void deleteNode();
+
+// Função para exibir os dados da lista
+void displayList();
+
+// Função para gerar um ID único para cada node
+int generateID();
+
+// Funções para validar os campos de entrada do usuário
+int validateEmail(const char email[]);
+int validateSexo(const char sexo[]);
+int validateAltura(double altura);
+int validateVacina(int vacina);
+
+int nodeCounter = 0;
+
+int main()
+{
+    int option;
+
+    do
+    {
+        printf("-----------------------------------------\n");
+        printf("1 - Criar/Adicionar Nodes à lista\n");
+        printf("2 - Editar dados do Node\n");
+        printf("3 - Excluir Node\n");
+        printf("4 - Listar dados da Lista\n");
+        printf("0 - Sair do algoritmo\n");
+        printf("Digite a opção: ");
+        scanf("%d", &option);
+
+        switch (option)
+        {
+        case 1:
+            addNode();
+            break;
+        case 2:
+            editNode();
+            break;
+        case 3:
+            deleteNode();
+            break;
+        case 4:
+            displayList();
+            break;
+        case 0:
+            printf("------------Fechando programa------------\n");
+            break;
+        default:
+            printf("Valor inválido\n");
+            break;
+        }
+    } while (option != 0);
+
+    return 0;
 }
 
-int AdicionarUsuario(){
-    int identificador, statusVacinacao, validacao, encontrado = 0;;
-    char nome[100], email[100], genero[100], endereco[100];
-    double altura;
+// Função para adicionar um novo node
+void addNode()
+{
+    struct Node* newNode;
+    int nodeID, nodeVacina;
+    char nodeNome[100], nodeEmail[100], nodeSexo[20], nodeEndereco[100];
+    double nodeAltura;
 
-    if (quantidadeUsuarios >= MAX_USUARIOS){
-        printf("Numero de usuarios alcançou o limite!\n");
-        return -1;
+    printf("Digite os dados do Node abaixo:\n");
+    printf("Digite o nome completo: ");
+    scanf(" %[^\n]", nodeNome);
+    printf("Digite o email: ");
+    scanf(" %[^\n]", nodeEmail);
+
+    while (validateEmail(nodeEmail) != 0)
+    {
+        printf("Tente novamente: ");
+        scanf(" %[^\n]", nodeEmail);
     }
-    
+
+    printf("Digite o sexo (Masculino, Feminino ou Indiferente): ");
+    scanf(" %[^\n]", nodeSexo);
+    nodeSexo[0] = toupper(nodeSexo[0]);
+
+    while (validateSexo(nodeSexo) != 0)
+    {
+        printf("Tente novamente: ");
+        scanf(" %[^\n]", nodeSexo);
+        nodeSexo[0] = toupper(nodeSexo[0]);
+    }
+
+    printf("Digite o endereço: ");
+    scanf(" %[^\n]", nodeEndereco);
+    printf("Digite a altura (Entre 1.0 e 2.0): ");
+    scanf("%lf", &nodeAltura);
+
+    while (validateAltura(nodeAltura) != 0)
+    {
+        printf("Tente novamente: ");
+        scanf("%lf", &nodeAltura);
+    }
+
+    printf("Foi vacinado? Digite 1 para sim ou 0 para não: ");
+    scanf("%d", &nodeVacina);
+
+    while (validateVacina(nodeVacina) != 0)
+    {
+        printf("Tente novamente: ");
+        scanf("%d", &nodeVacina);
+    }
+
+    // Gera um ID único e aleatorio para o node
+    nodeID = generateID();
+
+    // Aloca memória para o novo node
+    newNode = (struct Node*)malloc(sizeof(struct Node));
+
+    // Preenche os campos do node com os valores fornecidos pelo usuário
+    newNode->ID = nodeID;
+    strcpy(newNode->nome, nodeNome);
+    strcpy(newNode->email, nodeEmail);
+    strcpy(newNode->sexo, nodeSexo);
+    strcpy(newNode->endereco, nodeEndereco);
+    newNode->altura = nodeAltura;
+    newNode->vacina = nodeVacina;
+    newNode->next = NULL;
+
+    // Verifica se a lista está vazia
+    if (startNode == NULL)
+    {
+        // Se a lista estiver vazia, o novo node será o primeiro node da lista
+        startNode = newNode;
+    }
+    else
+    {
+        // Se a lista não estiver vazia, percorre a lista até encontrar o último node
+        struct Node* tempNode = startNode;
+        while (tempNode->next != NULL)
+        {
+            tempNode = tempNode->next;
+        }
+
+        // Insere o novo node no final da lista
+        tempNode->next = newNode;
+    }
+
+    // Incrementa o contador de nodes
+    nodeCounter++;
+
+    printf("Node adicionado com sucesso!\n");
+}
+
+// Função para editar os dados de um node existente
+void editNode()
+{
+    int nodeID, nodeVacina;
+    char nodeNome[100], nodeEmail[100], nodeSexo[20], nodeEndereco[100];
+    double nodeAltura;
+
+    if (startNode == NULL)
+    {
+        printf("A lista está vazia. Não há Nodes para editar.\n");
+        return;
+    }
+
+    printf("Digite o ID do Node a ser editado: ");
+    scanf("%d", &nodeID);
+
+    struct Node* tempNode = startNode;
+    while (tempNode != NULL)
+    {
+        if (tempNode->ID == nodeID)
+        {
+            printf("Digite os novos dados para o Node:\n");
+            printf("Digite o nome completo: ");
+            scanf(" %[^\n]", nodeNome);
+            printf("Digite o email: ");
+            scanf(" %[^\n]", nodeEmail);
+
+            while (validateEmail(nodeEmail) != 0)
+            {
+                printf("Tente novamente: ");
+                scanf(" %[^\n]", nodeEmail);
+            }
+
+            printf("Digite o sexo (Masculino, Feminino ou Indiferente): ");
+            scanf(" %[^\n]", nodeSexo);
+            nodeSexo[0] = toupper(nodeSexo[0]);
+
+            while (validateSexo(nodeSexo) != 0)
+            {
+                printf("Tente novamente: ");
+                scanf(" %[^\n]", nodeSexo);
+                nodeSexo[0] = toupper(nodeSexo[0]);
+            }
+
+            printf("Digite o endereço: ");
+            scanf(" %[^\n]", nodeEndereco);
+            printf("Digite a altura (Entre 1.0 e 2.0): ");
+            scanf("%lf", &nodeAltura);
+
+            while (validateAltura(nodeAltura) != 0)
+            {
+                printf("Tente novamente: ");
+                scanf("%lf", &nodeAltura);
+            }
+
+            printf("Foi vacinado? Digite 1 para sim ou 0 para não: ");
+            scanf("%d", &nodeVacina);
+
+            while (validateVacina(nodeVacina) != 0)
+            {
+                printf("Tente novamente: ");
+                scanf("%d", &nodeVacina);
+            }
+
+            // Atualiza os dados do node com os novos valores fornecidos pelo usuário
+            strcpy(tempNode->nome, nodeNome);
+            strcpy(tempNode->email, nodeEmail);
+            strcpy(tempNode->sexo, nodeSexo);
+            strcpy(tempNode->endereco, nodeEndereco);
+            tempNode->altura = nodeAltura;
+            tempNode->vacina = nodeVacina;
+
+            printf("Dados do Node atualizados com sucesso!\n");
+            return;
+        }
+
+        tempNode = tempNode->next;
+    }
+
+    printf("Não foi encontrado um Node com o ID fornecido.\n");
+}
+
+// Função para excluir um node da lista
+void deleteNode()
+{
+    int nodeID;
+
+    if (startNode == NULL)
+    {
+        printf("A lista está vazia. Não há Nodes para excluir.\n");
+        return;
+    }
+
+    printf("Digite o ID do Node a ser excluido: ");
+    scanf("%d", &nodeID);
+
+    if (startNode->ID == nodeID)
+    {
+        // Caso o node a ser excluido seja o primeiro node da lista
+        struct Node* tempNode = startNode;
+        startNode = startNode->next;
+        free(tempNode);
+        nodeCounter--;
+        printf("Node excluido com sucesso!\n");
+        return;
+    }
+
+    struct Node* prevNode = startNode;
+    struct Node* currNode = startNode->next;
+
+    while (currNode != NULL)
+    {
+        if (currNode->ID == nodeID)
+        {
+            prevNode->next = currNode->next;
+            free(currNode);
+            nodeCounter--;
+            printf("Node excluido com sucesso!\n");
+            return;
+        }
+
+        prevNode = currNode;
+        currNode = currNode->next;
+    }
+
+    printf("Não foi encontrado um Node com o ID fornecido.\n");
+}
+
+// Função para exibir os dados da lista
+void displayList()
+{
+    if (startNode == NULL)
+    {
+        printf("A lista está vazia. Não há Nodes para exibir.\n");
+        return;
+    }
+
+    struct Node* tempNode = startNode;
+    printf("Lista de Nodes:\n");
+    while (tempNode != NULL)
+    {
+        printf("ID: %d\n", tempNode->ID);
+        printf("Nome: %s\n", tempNode->nome);
+        printf("Email: %s\n", tempNode->email);
+        printf("sexo: %s\n", tempNode->sexo);
+        printf("Endereço: %s\n", tempNode->endereco);
+        printf("Altura: %.2lf\n", tempNode->altura);
+        printf("Vacina: %d\n", tempNode->vacina);
+        printf("--------------------\n");
+
+        tempNode = tempNode->next;
+    }
+}
+
+// Função para gerar um ID único para cada node
+int generateID()
+{
     srand(time(NULL));
+    int id = rand() % 10000;
 
-    do{
-        identificador = rand() % 100000;
-
-        for(int i = 0; i < quantidadeUsuarios; i++){
-            if(usuarios[i].identificador == identificador){
-                printf("Usuario ja existe\n");
-                identificador = 00000;
-                validacao = 1;
-                break;
-            }
-            else{
-                validacao = 0;
-            }
+    // Verifica se o ID já está em uso na lista
+    struct Node* tempNode = startNode;
+    while (tempNode != NULL)
+    {
+        if (tempNode->ID == id)
+        {
+            id = rand() % 10000; // Gera um novo ID
+            tempNode = startNode; // Reinicia a verificação
         }
-    } while (validacao == 1);
-
-    validacao = 1;
-    printf("Digite seu nome completo: ");
-    scanf(" %[^\n]", nome);
-    printf("Digite seu email: ");
-    scanf(" %[^\n]", email);
-
-    while(validacao == 1){
-        for (int i = 0; i < strlen(email); i++){
-            if (email[i] == '@'){
-                encontrado = 1;
-                validacao = 0;
-                break;
-            }
-        }
-
-        if (encontrado == 1){
-            validacao = 0;
-        }
-        else{
-            printf("Email invalido tente novamente: ");
-            scanf(" %[^\n]", email);
+        else
+        {
+            tempNode = tempNode->next;
         }
     }
 
-    validacao = 1;
-    printf("Digite seu genero (Masculino ou Feminino): ");
-    scanf("%s", genero);
-    genero[0] = toupper(genero[0]);
-
-    while(validacao == 1){
-        if(strcmp(genero, "Masculino") == 0 || strcmp(genero, "Feminino") == 0 || strcmp(genero, "Indefinido") == 0)
-            break;
-        else{
-            printf("e invalido, tente novamente: ");
-            scanf("%s", genero);
-            genero[0] = toupper(genero[0]);
-        }
-    }
-
-    printf("Digite seu endereco: ");
-    scanf(" %[^\n]", endereco);
-    printf("Digite sua altura: ");
-    scanf("%lf", &altura);
-
-    while(validacao == 1){
-        if(altura > 2 || altura < 1){
-            printf("Altura invalida, lembre-se que a medida esta em metros.\n");
-            printf("Tente novamente: ");
-            scanf("%lf", &altura);
-        }
-        else{
-            break;
-        }
-    }
-
-    printf("Digite o estado de sua vacinacao (1 = Vacinado / 0 = nao vacinado): ");
-    scanf("%d", &statusVacinacao);
-
-    while(validacao == 1){
-        if(statusVacinacao == 1 || statusVacinacao == 0)
-            break;
-        else{
-            printf("So sao aceitos 1 e 0 como valor.\n");
-            printf("Tente novamente: ");
-            scanf("%d", &statusVacinacao);
-        }
-    }
-
-    Usuario tempUsuario;
-    tempUsuario.identificador = identificador;
-    strcpy(tempUsuario.nomeCompleto, nome);
-    strcpy(tempUsuario.email, email);
-    strcpy(tempUsuario.genero, genero);
-    strcpy(tempUsuario.endereco, endereco);
-    tempUsuario.altura = altura;
-    tempUsuario.statusVacinacao = statusVacinacao;
-    usuarios[quantidadeUsuarios] = tempUsuario;
-    quantidadeUsuarios++;
-    return 0;
+    return id;
 }
 
-int EditarUsuario(){
-    char email[100];
-    int validacao = 1;
-
-    printf("Digite o email do usuario: ");
-    scanf(" %[^\n]", email);
-
-    for(int i = 0; i < quantidadeUsuarios + 1; i++){
-        if(strcmp(usuarios[i].email, email) == 0){
-            printf("Nome: %s\n", usuarios[i].nomeCompleto);
-            printf("e: %s\n", usuarios[i].genero);
-            printf("c: %s\n", usuarios[i].endereco);
-            printf("Altura: %.2lf\n", usuarios[i].altura);
-            printf("Status deca: %d\n", usuarios[i].statusVacinacao);
-
-            printf("Digite seu nome completo: ");
-            scanf(" %[^\n]", usuarios[i].nomeCompleto);
-            printf("Digite seu e (Masculino/Feminino/Indefinido): ");
-            scanf("%s", usuarios[i].genero);
-            usuarios[i].genero[0] = toupper(usuarios[i].genero[0]);
-
-            while(validacao == 1){
-                if(strcmp(usuarios[i].genero, "Masculino") == 0 || strcmp(usuarios[i].genero, "Feminino") == 0 || strcmp(usuarios[i].genero, "Indefinido") == 0)
-                    break;
-                else{
-                    printf("e invalido, tente novamente: ");
-                    scanf("%s", usuarios[i].genero);
-                    usuarios[i].genero[0] = toupper(usuarios[i].genero[0]);
-                }
-            }
-
-            printf("Digite seu c: ");
-            scanf(" %[^\n]", usuarios[i].endereco);
-            printf("Digite sua altura: ");
-            scanf("%lf", &usuarios[i].altura);
-
-            while(validacao == 1){
-                if(usuarios[i].altura > 2 || usuarios[i].altura < 1){
-                    printf("Altura invalida, lembre-se que a medida esta em metros.\n");
-                    printf("Tente novamente: ");
-                    scanf("%lf", &usuarios[i].altura);
-                }
-                else{
-                    break;
-                }
-            }
-
-            printf("Digite o estado de suaca (1 = Vacinado / 0 = nao vacinado): ");
-            scanf("%d", &usuarios[i].statusVacinacao);
-
-            while(validacao == 1){
-                if(usuarios[i].statusVacinacao == 1 || usuarios[i].statusVacinacao == 0)
-                    break;
-                else{
-                    printf("Só são aceitos 1 e 0 como valor.\n");
-                    printf("Tente novamente: ");
-                    scanf("%d", &usuarios[i].statusVacinacao);
-                }
-            }
-
-            printf("Novo nome: %s\n", usuarios[i].nomeCompleto);
-            printf("Novo e: %s\n", usuarios[i].genero);
-            printf("Novo c: %s\n", usuarios[i].endereco);
-            printf("Nova altura: %.2lf\n", usuarios[i].altura);
-            printf("Novo status deca: %d\n", usuarios[i].statusVacinacao);
-            return 0;
-        }
-    }
-
-    printf("Usuario nao encontrado.\n");
-    return 0;
-}
-
-int ExcluirUsuario(){
-    char email[100];
-    int validacao = 1, certeza = 0;
-
-    printf("Digite o email do usuario: ");
-    scanf(" %[^\n]", email);
-
-    for(int i = 0; i < quantidadeUsuarios; i++){
-        if(strcmp(usuarios[i].email, email) == 0){
-            printf("Nome: %s\n", usuarios[i].nomeCompleto);
-            printf("e: %s\n", usuarios[i].genero);
-            printf("c: %s\n", usuarios[i].endereco);
-            printf("Altura: %.2lf\n", usuarios[i].altura);
-            printf("Status deca: %d\n", usuarios[i].statusVacinacao);
-            
-            printf("Tem certeza que deseja excluir esse usuario?\n1 - sim 2 - nao\n");
-            scanf("%d", &certeza);
-
-            if(certeza == 1){
-                usuarios[i].identificador = 0;
-                memset(usuarios[i].email, 0, sizeof(usuarios[i].email));
-                memset(usuarios[i].nomeCompleto, 0, sizeof(usuarios[i].nomeCompleto));
-                memset(usuarios[i].genero, 0, sizeof(usuarios[i].genero));
-                memset(usuarios[i].endereco, 0, sizeof(usuarios[i].endereco));
-                usuarios[i].altura = 0;
-                usuarios[i].statusVacinacao = 0;
-                quantidadeUsuarios--;
-
-                for (int j = i + 1; j < quantidadeUsuarios; j++){
-                    usuarios[j - 1] = usuarios[j];
-                }
-                return 0;
-            }
-            else if(certeza == 2){
-                return 0;
-            }
-        }
-    }
-
-    printf("Usuario nao encontrado.\n");
-    return -1;
-}
-
-int BuscarPorEmail(){
-    char email[100];
-
-    printf("Digite o email do usuario: ");
-    scanf(" %[^\n]", email);
-
-    for(int i = 0; i < quantidadeUsuarios; i++){
-        if(strcmp(usuarios[i].email, email) == 0){
-            printf("Nome: %s\n", usuarios[i].nomeCompleto);
-            printf("Email: %s\n", usuarios[i].email);
-            printf("e: %s\n", usuarios[i].genero);
-            printf("c: %s\n", usuarios[i].endereco);
-            printf("Altura: %.2lf\n", usuarios[i].altura);
-            printf("Status deca: %d\n", usuarios[i].statusVacinacao);
-            return 0;
-        }
-    }
-
-    printf("Usuario nao encontrado.\n");
-    return -1;
-}
-
-int ImprimirUsuarios(){
-    for(int i = 0; i < quantidadeUsuarios; i++){
-        printf("\n\n----------USUARIO %d----------\n", i+1);
-        printf("id:  %d\n", usuarios[i].identificador);
-        printf("nome: %s\n", usuarios[i].nomeCompleto);
-        printf("email: %s\n", usuarios[i].email);
-        printf("genero: %s\n", usuarios[i].genero);
-        printf("endereco: %s\n", usuarios[i].endereco);
-        printf("altura: %.2lf\n", usuarios[i].altura);
-        printf("status de vacinacao: %d\n", usuarios[i].statusVacinacao);
-    }
-}
-
-int BackUp(){
-    int certeza;
-
-    printf("tem certeza que deseja fazer backup?\n1 - sim 2 - nao\n");
-    scanf("%d", &certeza);
-
-    if(certeza == 1){
-        for(int i = 0; i < quantidadeUsuarios; i++){
-           usuariosbackup[i].identificador = usuarios[i].identificador;
-            strcpy(usuariosbackup[i].nomeCompleto, usuarios[i].nomeCompleto);
-            strcpy(usuariosbackup[i].email,usuarios[i].email);
-            strcpy(usuariosbackup[i].genero,usuarios[i].genero);
-            strcpy(usuariosbackup[i].endereco,usuarios[i].endereco);
-           usuariosbackup[i].altura =usuarios[i].altura;
-           usuariosbackup[i].statusVacinacao =usuarios[i].statusVacinacao;
-
-            printf("BackUp concluido com sucesso\n");
-
-            return 0;
-        }
-    }
-    else if(certeza == 2){
+// Função para validar o email
+int validateEmail(const char email[])
+{
+    // Se não tiver arroba retornar 1
+    if (strstr(email, "@") != NULL)
+    {
         return 0;
     }
-    else {
-        printf("invalido\n");
-        return -1;
+    else
+    {
+        return 1;
     }
 }
 
-int Restauracao(){
-    int certeza;
-
-    printf("quer mesmo fazer um backup?\n1 - sim 2 - nao\n");
-    scanf("%d", &certeza);
-
-    if(certeza == 1){
-        for(int i = 0; i < usuarios; i++){
-            usuarios[i].identificador = usuariosbackup[i].identificador;
-            strcpy(usuarios[i].nomeCompleto, usuariosbackup[i].nomeCompleto);
-            strcpy(usuarios[i].email, usuariosbackup[i].email);
-            strcpy(usuarios[i].genero, usuariosbackup[i].genero);
-            strcpy(usuarios[i].endereco, usuariosbackup[i].endereco);
-            usuarios[i].altura = usuariosbackup[i].altura;
-            usuarios[i].statusVacinacao = usuariosbackup[i].statusVacinacao;
-        }
-
-        printf("Backup realizado com sucesso\n");
-
+// Função para validar o sexo
+int validateSexo(const char sexo[])
+{
+    // Se digitar um sexo que não esteja nas opccoes retorna 1  
+    if (strcmp(sexo, "Masculino") == 0 || strcmp(sexo, "Feminino") == 0 || strcmp(sexo, "Indiferente") == 0)
+    {
         return 0;
     }
-    else if (certeza == 2){
+    else
+    {
+        return 1;
+    }
+}
+
+// Função para validar a altura
+int validateAltura(double altura)
+{
+    // Se a altura inserida não estiver nos parametros retornar 1
+    if (altura >= 1.0 && altura <= 2.0)
+    {
         return 0;
     }
-    else {
-        printf("Invalido\n");
-        return -1;
+    else
+    {
+        return 1;
     }
+}
+
+// Função para validar a vacinação
+int validateVacina(int vacina)
+{
+    // Se a opccão nao estiver nos parametros retorna 1
+    if (vacina == 0 || vacina == 1)
+    {
+        return 0;
     }
+    else
+    {
+        return 1;
+    }
+}
